@@ -18,7 +18,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id)
+            'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
 @bp.route('/register', methods=('GET', 'POST'))
@@ -39,8 +39,9 @@ def register():
             try:
                 db.execute(
                     "INSERT INTO users (username, password) VALUES (?,?)",
-                    (username,generate_password_hash(password)),
+                    (username,generate_password_hash(password),),
                 )
+                db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
@@ -55,9 +56,11 @@ def login():
         password= request.form['password']
         db = get_db()
         user = db.execute(
-            'SELECT * FROM users WHERE username = ?', (username)
+            'SELECT * FROM users WHERE username = ?', (username,)
         ).fetchone()
 
+        error = None
+        
         if user is None:
             error = "Incorrect username or password."
         elif not check_password_hash(user['password'], password):
