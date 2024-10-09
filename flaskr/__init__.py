@@ -3,9 +3,9 @@ import os
 from flask import Flask
 
 def create_app(test_config=None):
-    from . import db
-    from . import auth
-    from . import blog
+    from flaskr import db
+    from flaskr import auth
+    from flaskr import blog
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
